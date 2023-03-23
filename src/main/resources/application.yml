@@ -1,0 +1,15 @@
+server:
+  port: 3001
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/moveinsync
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+      show-sql: true
