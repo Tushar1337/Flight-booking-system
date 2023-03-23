@@ -10,7 +10,7 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
-    private final String secret = "secret-key";
+    private final String secret = "ZBlt3w4fMYGh4pOzqxltO9XDPdSxITLQ2H8eOZUDdylZb6e5H6z5U6YyU9ukpveblODBCdBHm5bMkU5h5JmkY6iw";
 
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();

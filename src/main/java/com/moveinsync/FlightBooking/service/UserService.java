@@ -31,8 +31,8 @@ public class UserService {
         return ("Saved");
     }
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+//    @Autowired
+//    private AuthenticationManager authenticationManager;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -60,18 +60,24 @@ public class UserService {
 
     public String loginUser(User userDto) {
         // authenticate the user
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userDto.getUsername(), userDto.getPassword()));
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(userDto.getUsername(), userDto.getPassword()));
 
-        // get the authenticated user
-        User user = (User) authentication.getPrincipal();
+        String curusername = userDto.getUsername();
 
-        // generate a JWT token
-        String token = jwtUtil.generateToken(user);
+        User curuser = userRepo.findByUsername(curusername);
 
-        // set the JWT token on the user object
-        user.setToken(token);
+        System.out.println(PasswordUtil.match(userDto.getPassword(),curuser.getPassword()));
 
-        return token;
+        if (PasswordUtil.match(userDto.getPassword(),curuser.getPassword())) {
+            // generate a JWT token
+            String token = jwtUtil.generateToken(curuser);
+
+            // set the JWT token on the user object
+            userDto.setToken(token);
+
+            return token;
+        }
+        return null;
     }
 }

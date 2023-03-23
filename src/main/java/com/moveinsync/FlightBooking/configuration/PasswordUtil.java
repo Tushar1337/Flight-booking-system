@@ -6,4 +6,7 @@ public class PasswordUtil {
     public static String encode(String password) {
         return encoder.encode(password);
     }
+    public static boolean match(String password, String hashedPassword) {
+        return encoder.matches(password, hashedPassword);
+    }
 }
