@@ -1,10 +1,10 @@
-package com.moveinsync.FlightBooking;
+package com.moveinsync.flightbooking;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class FlightBookingApplicationTests {
+class flightBookingApplicationTests {
 
 	@Test
 	void contextLoads() {

@@ -1,4 +1,4 @@
-package com.moveinsync.FlightBooking.configuration;
+package com.moveinsync.flightbooking.configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class PasswordUtil {

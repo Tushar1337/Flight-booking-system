@@ -1,13 +1,10 @@
-package com.moveinsync.FlightBooking.service;
+package com.moveinsync.flightbooking.service;
 
-import com.moveinsync.FlightBooking.configuration.JwtUtil;
-import com.moveinsync.FlightBooking.configuration.PasswordUtil;
-import com.moveinsync.FlightBooking.model.User;
-import com.moveinsync.FlightBooking.repository.UserRepo;
+import com.moveinsync.flightbooking.configuration.JwtUtil;
+import com.moveinsync.flightbooking.configuration.PasswordUtil;
+import com.moveinsync.flightbooking.model.User;
+import com.moveinsync.flightbooking.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;

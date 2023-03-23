@@ -1,6 +1,5 @@
-package com.moveinsync.FlightBooking.model;
+package com.moveinsync.flightbooking.model;
 
-import com.moveinsync.FlightBooking.configuration.JwtUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

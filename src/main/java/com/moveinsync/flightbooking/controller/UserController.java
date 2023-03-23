@@ -1,7 +1,7 @@
-package com.moveinsync.FlightBooking.controller;
+package com.moveinsync.flightbooking.controller;
 
-import com.moveinsync.FlightBooking.model.User;
-import com.moveinsync.FlightBooking.service.UserService;
+import com.moveinsync.flightbooking.model.User;
+import com.moveinsync.flightbooking.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

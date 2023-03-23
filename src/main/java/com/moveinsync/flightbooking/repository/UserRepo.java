@@ -1,6 +1,6 @@
-package com.moveinsync.FlightBooking.repository;
+package com.moveinsync.flightbooking.repository;
 
-import com.moveinsync.FlightBooking.model.User;
+import com.moveinsync.flightbooking.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
