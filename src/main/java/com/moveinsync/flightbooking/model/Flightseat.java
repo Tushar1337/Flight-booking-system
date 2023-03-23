@@ -30,7 +30,7 @@ public class Flightseat {
     @Column(name = "ticket_price_for_seat")
     private double ticketPrice;
     @Column(name = "user_id")
-    private Long userId;
+    private Long userId=null;
 
     @Column(name = "seat_type")
     @Enumerated(EnumType.STRING)
