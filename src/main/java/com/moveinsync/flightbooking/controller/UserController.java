@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -19,14 +21,14 @@ public class UserController {
         if (userService.usernameExists(userDto.getUsername()) != null) {
             return ResponseEntity.badRequest().body("Username is already taken");
         }
-
-//        User user = new User(userDto.getUsername(), userDto.getPassword(), userDto.getEmail(), userDto.getAdmin);
         userService.registerUser(userDto);
 
         return ResponseEntity.ok().body("User registered successfully");
     }
     @GetMapping("/users")
-    public List<User> showallusers() {
+    public List<User> showallusers(@RequestHeader HashMap request) {
+        String token = request.get("authorization").toString();
+        System.out.println(token);
         return userService.showall();
     }
 
