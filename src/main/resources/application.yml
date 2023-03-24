@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/moveinsync
     username: postgres
-    password: postgres
+    password: Hard123@c
   jpa:
     hibernate:
       ddl-auto: update
