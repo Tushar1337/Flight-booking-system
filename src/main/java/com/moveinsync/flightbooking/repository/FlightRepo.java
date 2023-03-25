@@ -12,9 +12,13 @@ import java.util.List;
 public interface FlightRepo extends JpaRepository<Flight,Integer> {
     public List<Flight> findAllByDateAndDepartureAirportEqualsIgnoreCaseAndArrivalAirportEqualsIgnoreCase(Date date, String source, String destination);
     @Query("SELECT DISTINCT f FROM Flight f JOIN f.seats s WHERE f.date = :date AND f.departureAirport = :departureAirport AND f.arrivalAirport = :arrivalAirport AND s.seatType = :seatType AND s.booked=false")
-    List<Flight> findByDateAndDepartureAirportAndArrivalAirportAndSeatType(
+    public List<Flight> findByDateAndDepartureAirportAndArrivalAirportAndSeatType(
             @Param("date") Date date,
             @Param("departureAirport") String departureAirport,
             @Param("arrivalAirport") String arrivalAirport,
             @Param("seatType") SeatType seatType);
+
+    public Flight findByFlightNumberIgnoreCase(String flightNumber);
+    public Flight deleteByFlightNumberIgnoreCase(String flightNumber);
+
 }

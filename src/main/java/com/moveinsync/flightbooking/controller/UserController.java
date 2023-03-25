@@ -56,11 +56,7 @@ public class UserController {
     }
 
 
-    @PostMapping("/add")
-    public void add(@RequestBody FlightDto flightDto){
-        Flight flight = new Flight(flightDto.getFlightNumber(),flightDto.getDepartureAirport(),flightDto.getDepartureTime(),flightDto.getDate(),flightDto.getArrivalAirport(),flightDto.getArrivalTime(),flightDto.getFlightDuration(),flightDto.getTicketPrice(),flightDto.getTotalSeats(),flightDto.getAirlineName(),flightDto.getAircraftType(),flightDto.getFlightSeatClasses(),flightDto.getSeats());
-        flightRepo.save(flight);
-    }
+
 }
 
 //{
