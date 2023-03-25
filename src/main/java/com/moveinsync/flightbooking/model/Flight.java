@@ -1,20 +1,26 @@
 package com.moveinsync.flightbooking.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.Getter;
+import lombok.Setter;
+
 
 import javax.persistence.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.sql.Date;
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
 public class Flight {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "flight_number")
+    @Column(name = "flight_number",unique = true)
     private String flightNumber;
 
     @Column(name = "departure_airport")
@@ -22,6 +28,9 @@ public class Flight {
 
     @Column(name = "departure_time")
     private LocalDateTime departureTime;
+
+    @Column(name = "date")
+    private Date date;
 
     @Column(name = "arrival_airport")
     private String arrivalAirport;
@@ -33,27 +42,56 @@ public class Flight {
     private Duration flightDuration;
 
     @Column(name = "ticket_price")
-    private double ticketPrice;
+    private Double ticketPrice;
 
     @Column(name = "available_seats")
-    private int availableSeats;
+    private Integer totalSeats;
 
     @Column(name = "airline_name")
     private String airlineName;
 
     @Column(name = "aircraft_type")
     private String aircraftType;
+    @Transient
+    private List<FlightSeatClass> flightSeatClasses;
 
     @OneToMany(mappedBy = "flight", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
     @JsonManagedReference
-    private List<Flightseat> seats;
+    private List<FlightSeat> seats;
 
-    public void generateSeats(int numberOfSeats,double ticketprice) {
+    public Flight(String flightNumber, String departureAirport, LocalDateTime departureTime, Date date, String arrivalAirport, LocalDateTime arrivalTime, Duration flightDuration, Double ticketPrice, Integer totalSeats, String airlineName, String aircraftType, List<FlightSeatClass> flightSeatClasses,List<FlightSeat> seats) {
+        this.flightNumber = flightNumber;
+        this.departureAirport = departureAirport;
+        this.departureTime = departureTime;
+        this.date = date;
+        this.arrivalAirport = arrivalAirport;
+        this.arrivalTime = arrivalTime;
+        this.flightDuration = flightDuration;
+        this.ticketPrice = ticketPrice;
+        this.totalSeats = totalSeats;
+        this.airlineName = airlineName;
+        this.aircraftType = aircraftType;
+        this.flightSeatClasses = flightSeatClasses;
+        this.seats = seats;
+        this.generateSeats();
+    }
+
+    public Flight() {
+
+    }
+
+    public void generateSeats() {
         seats = new ArrayList<>();
-        for (int i = 1; i <= numberOfSeats; i++) {
-            Flightseat seat = new Flightseat(this, i,ticketprice);
+        for (int i = 1; i <= totalSeats; i++) {
+            FlightSeat seat = new FlightSeat(this, i,ticketPrice);
             seats.add(seat);
         }
+        flightSeatClasses.forEach((seat)->{
+            int index = seat.getSeatNumber();
+            seats.get(index).setSeatType(seat.getSeatType());
+            seats.get(index).setTicketPrice(seat.getTicketPrice());
+        });
     }
     // Constructors, getters and setters omitted for brevity
+
 }
