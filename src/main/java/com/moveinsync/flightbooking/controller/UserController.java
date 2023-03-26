@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 
-@RestController
+@RestController()
 public class UserController {
 
     @Autowired
@@ -25,15 +25,14 @@ public class UserController {
 
         return ResponseEntity.ok().body("User registered successfully");
     }
-    @GetMapping("/users")
-    public List<User> showallusers(@RequestHeader HashMap request) {
-        String token = request.get("authorization").toString();
-        System.out.println(token);
-        return userService.showall();
-    }
-
     @PostMapping("/login")
     public String login(@RequestBody User userdto) {
+
         return (userService.loginUser(userdto));
+    }
+    @GetMapping("/all")
+    public List<User> showallusers(@RequestHeader HashMap request) {
+        String token = request.get("authorization").toString().substring(7);
+        return userService.showall(token);
     }
 }
