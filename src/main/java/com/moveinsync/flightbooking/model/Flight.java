@@ -1,6 +1,9 @@
 package com.moveinsync.flightbooking.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.Duration;
@@ -8,6 +11,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Flight {
     @Id
@@ -48,7 +54,11 @@ public class Flight {
     @JsonManagedReference
     private List<Flightseat> seats;
 
-    public void generateSeats(int numberOfSeats,double ticketprice) {
+    public Long getId() {
+        return id;
+    }
+
+    public void generateSeats(int numberOfSeats, double ticketprice) {
         seats = new ArrayList<>();
         for (int i = 1; i <= numberOfSeats; i++) {
             Flightseat seat = new Flightseat(this, i,ticketprice);
