@@ -11,7 +11,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Flightseat {
+public class FlightSeat {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -22,13 +22,14 @@ public class Flightseat {
     private Flight flight;
 
     @Column(name = "seat_number")
-    private int seatNumber;
+    private Integer seatNumber;
 
     @Column(name = "booked")
     private boolean booked = false;
 
     @Column(name = "ticket_price_for_seat")
-    private double ticketPrice;
+    private Double ticketPrice;
+
     @Column(name = "user_id")
     private Long userId=null;
 
@@ -37,7 +38,7 @@ public class Flightseat {
     private SeatType seatType = SeatType.ECONOMY;
 
 
-    public Flightseat(Flight flight, int seatNumber, double ticketPrice) {
+    public FlightSeat(Flight flight, int seatNumber, double ticketPrice) {
         this.flight = flight;
         this.seatNumber = seatNumber;
         this.ticketPrice=ticketPrice;
