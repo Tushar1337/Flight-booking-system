@@ -40,7 +40,7 @@ public class UserController {
     public List<User> showallusers(@RequestHeader HashMap request) {
         String token = request.get("authorization").toString();
         System.out.println(token);
-        return userService.showall();
+        return userService.showall(token);
     }
 
     @PostMapping("/login")

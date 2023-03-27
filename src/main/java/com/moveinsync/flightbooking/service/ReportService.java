@@ -20,7 +20,7 @@ public class ReportService {
 
 
     public String generateReports(Long flightId){
-        Optional<Flight> flight=flightRepo.findById(flightId);
+        Optional<Flight> flight=flightRepo.findById(Math.toIntExact(flightId));
         if(flight.isPresent()){
             Reportmodel report=reportRepo.findByFlightId(flightId);
             return "Your flight with flightNumber "+flight.get().getFlightNumber()+" has generated a revenue of "+report.getRevenueGenerated()+" with the booked seats are "+report.getBookedseats();
