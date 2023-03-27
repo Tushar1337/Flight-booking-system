@@ -22,7 +22,7 @@ public class Flightcontroller {
     }
 
     @GetMapping("/{flightId}/")
-    public List<FlightSeat> getallflightsbyid(@PathVariable("flightId") Long flightid) {
+    public List<FlightSeat> getallseatsbyflightid(@PathVariable("flightId") Long flightid) {
         return flightservice.getallseatsbyflightid(flightid);
     }
     @GetMapping("/getseatsrelatedtouser")
