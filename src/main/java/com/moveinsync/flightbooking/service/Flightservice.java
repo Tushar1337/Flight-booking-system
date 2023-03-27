@@ -2,8 +2,10 @@ package com.moveinsync.flightbooking.service;
 
 import com.moveinsync.flightbooking.model.Flight;
 import com.moveinsync.flightbooking.model.FlightSeat;
+import com.moveinsync.flightbooking.model.User;
 import com.moveinsync.flightbooking.repository.FlightRepo;
 import com.moveinsync.flightbooking.repository.SeatRepo;
+import com.moveinsync.flightbooking.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,9 @@ public class Flightservice {
 
     @Autowired
     Paymentservice paymentservice;
+
+    @Autowired
+    UserRepo userRepo;
 
     public List<Flight> getallflights() {
         return flightRepo.findAll();
@@ -59,5 +64,10 @@ public class Flightservice {
             return "Seat deleted successfully your refunded amount is " + refunded_ticket_price;
         }
         return "Its not Your seat Check your seat number first";
+    }
+    public List<FlightSeat> getseatsrelatedtouser(){
+        String Username="Hardik";
+        User user=userRepo.findByUsername(Username);
+        return seatRepo.findAllByUserId(user.getId());
     }
 }

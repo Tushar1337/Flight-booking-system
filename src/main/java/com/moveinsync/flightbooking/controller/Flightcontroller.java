@@ -25,7 +25,10 @@ public class Flightcontroller {
     public List<FlightSeat> getallflightsbyid(@PathVariable("flightId") Long flightid) {
         return flightservice.getallseatsbyflightid(flightid);
     }
-
+    @GetMapping("/getseatsrelatedtouser")
+    public List<FlightSeat> getseatsrelatedtouser(){
+        return flightservice.getseatsrelatedtouser();
+    }
     @PostMapping("/{seatid}")
     public String booktheseat(@PathVariable("seatid") Long seatid) {
         return flightservice.bookaseat(seatid);
