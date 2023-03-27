@@ -19,6 +19,6 @@ public interface FlightRepo extends JpaRepository<Flight,Integer> {
             @Param("seatType") SeatType seatType);
 
     public Flight findByFlightNumberIgnoreCase(String flightNumber);
-    public Flight deleteByFlightNumberIgnoreCase(String flightNumber);
+    public void deleteByFlightNumberIgnoreCase(String flightNumber);
 
 }

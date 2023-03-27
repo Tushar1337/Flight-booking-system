@@ -21,6 +21,6 @@ public class Reportmodel {
     @Column(name = "Revenue_Generated")
     private Double revenueGenerated= (double) 0;
 
-    @Column(name = "Flight_id",unique = true)
-    private Long flightId;
+    @Column(name = "Flight_Number",unique = true)
+    private String flightNumber;
 }

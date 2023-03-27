@@ -15,18 +15,19 @@ public class Flightcontroller {
 
     @Autowired
     Flightservice flightservice;
+
     @GetMapping("/getallflights")
-    public List<Flight> getallflights(){
+    public List<Flight> getallflights() {
         return flightservice.getallflights();
     }
 
     @GetMapping("/{flightId}/")
-    public List<FlightSeat> getallflightsbyid(@PathVariable("flightId") Long flightid){
+    public List<FlightSeat> getallflightsbyid(@PathVariable("flightId") Long flightid) {
         return flightservice.getallseatsbyflightid(flightid);
     }
 
     @PostMapping("/{seatid}")
-    public String booktheseat(@PathVariable("seatid") Long seatid){
+    public String booktheseat(@PathVariable("seatid") Long seatid) {
         return flightservice.bookaseat(seatid);
     }
 }

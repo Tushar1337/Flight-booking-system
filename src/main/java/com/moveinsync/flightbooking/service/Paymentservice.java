@@ -10,9 +10,9 @@ public class Paymentservice {
 
     @Autowired
     ReportRepo reportRepo;
-    public Boolean dopayment(Long flight_Id,Double ticketPrice){
+    public Boolean dopayment(String flightNumber,Double ticketPrice){
 
-        Reportmodel report=reportRepo.findByFlightId(flight_Id);
+        Reportmodel report=reportRepo.findByFlightNumber(flightNumber);
 
         report.setBookedseats(report.getBookedseats()+1);
         report.setRevenueGenerated(report.getRevenueGenerated()+ticketPrice);

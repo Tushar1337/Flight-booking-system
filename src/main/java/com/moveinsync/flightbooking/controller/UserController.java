@@ -5,6 +5,7 @@ import com.moveinsync.flightbooking.model.Flight;
 import com.moveinsync.flightbooking.model.SeatType;
 import com.moveinsync.flightbooking.model.User;
 import com.moveinsync.flightbooking.repository.FlightRepo;
+import com.moveinsync.flightbooking.repository.UserRepo;
 import com.moveinsync.flightbooking.service.UserFlightService;
 import com.moveinsync.flightbooking.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ public class UserController {
 
     @Autowired
     private FlightRepo flightRepo;
+    @Autowired
+    private UserRepo userRepo;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User userDto) {
@@ -38,7 +41,7 @@ public class UserController {
     }
     @GetMapping("/users")
     public List<User> showallusers(@RequestHeader HashMap request) {
-        String token = request.get("authorization").toString();
+        String token = request.get("authorization").toString().substring(7);
         System.out.println(token);
         return userService.showall(token);
     }
@@ -56,11 +59,4 @@ public class UserController {
     }
 
 
-
 }
-
-//{
-//    "date":"2023-03-24",
-//    "source":"Indira Gandhi International Airport",
-//    "destination":"Bangalore International Airport Limited Airport"
-//}
