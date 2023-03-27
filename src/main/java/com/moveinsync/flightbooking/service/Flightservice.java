@@ -1,7 +1,7 @@
 package com.moveinsync.flightbooking.service;
 
 import com.moveinsync.flightbooking.model.Flight;
-import com.moveinsync.flightbooking.model.Flightseat;
+import com.moveinsync.flightbooking.model.FlightSeat;
 import com.moveinsync.flightbooking.repository.FlightRepo;
 import com.moveinsync.flightbooking.repository.SeatRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,32 +18,45 @@ public class Flightservice {
 
     @Autowired
     SeatRepo seatRepo;
+
+    @Autowired
+    Paymentservice paymentservice;
+
     public List<Flight> getallflights(){
         return flightRepo.findAll();
     }
 
-    public List<Flightseat> getallseatsbyflightid(Long id){
+    public List<FlightSeat> getallseatsbyflightid(Long id){
         return seatRepo.findAllByFlightId(id);
     }
 
     public String bookaseat(Long id){
-        Optional<Flightseat> seat=seatRepo.findById(id);
+        Long user_Id=123L;
+        Optional<FlightSeat> seat=seatRepo.findById(id);
         if(seat.isPresent()){
             if(seat.get().isBooked()){
                 return "This seat is already booked";
             }
             seat.get().setBooked(true);
-//            seat.get().setUserId();  //we will try to pass the userid using jwt
-//            we have to pass it to payment service before booking the seat
+            Long flightId=seat.get().getFlight().getId();
+            Double ticketprice=seat.get().getTicketPrice();
+            paymentservice.dopayment(flightId,ticketprice);
+            seat.get().setUserId(user_Id);
+            seatRepo.save(seat.get());
             return "Your seat booked successfully";
         }
         return "Seat id is invalid";
     }
     public String deleteaseat(Long seatid){
-        Optional<Flightseat> seat=seatRepo.findById(seatid);
-
-//        we have to check whether the userid match with the userid fetched from seat if(userid got matched with fetched then we will display its not your seat)
-//        if matched then display the half amount
-        return null;
+        Long user_Id=123L;
+        Optional<FlightSeat> seat=seatRepo.findById(seatid);
+        if(seat.isPresent() &&user_Id.equals(seat.get().getUserId())){
+            seat.get().setUserId(null);
+            seat.get().setBooked(false);
+            seatRepo.save(seat.get());
+            double refunded_ticket_price=(seat.get().getTicketPrice())/2;
+            return "Seat deleted successfully your refunded amount is "+refunded_ticket_price;
+        }
+        return "Its not Your seat Check your seat number first";
     }
 }

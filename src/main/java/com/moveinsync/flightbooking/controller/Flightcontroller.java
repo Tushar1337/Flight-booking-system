@@ -2,7 +2,7 @@ package com.moveinsync.flightbooking.controller;
 
 
 import com.moveinsync.flightbooking.model.Flight;
-import com.moveinsync.flightbooking.model.Flightseat;
+import com.moveinsync.flightbooking.model.FlightSeat;
 import com.moveinsync.flightbooking.service.Flightservice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +21,7 @@ public class Flightcontroller {
     }
 
     @GetMapping("/{flightId}/")
-    public List<Flightseat> getallflightsbyid(@PathVariable("flightId") Long flightid){
+    public List<FlightSeat> getallflightsbyid(@PathVariable("flightId") Long flightid){
         return flightservice.getallseatsbyflightid(flightid);
     }
 
