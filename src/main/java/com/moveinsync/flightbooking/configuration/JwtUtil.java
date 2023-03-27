@@ -1,5 +1,7 @@
 package com.moveinsync.flightbooking.configuration;
 import com.moveinsync.flightbooking.model.User;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
@@ -14,18 +16,25 @@ public class JwtUtil {
 
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("sub", user.getUsername());
+        claims.put("exp", System.currentTimeMillis() + 1000 * 60 * 60 * 10);
+        claims.put("iat", new Date().getTime());
+        claims.put("isadmin", user.getisAdmin());
+
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(user.getUsername())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .signWith(SignatureAlgorithm.HS512, Secret)
                 .compact();
     }
 
-    public boolean validateToken(String token, User user) {
-        String username = extractUsername(token);
-        return (username.equals(user.getUsername()) && !isTokenExpired(token));
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser().setSigningKey(Secret).parseClaimsJws(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            // log the exception
+            return false;
+        }
     }
 
     public String extractUsername(String token) {

@@ -46,7 +46,7 @@ public class User implements UserDetails {
         return this.email;
     }
 
-    public boolean isAdmin() {
+    public boolean getisAdmin() {
         return isAdmin;
     }
 
