@@ -2,6 +2,8 @@ package com.moveinsync.flightbooking.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.validation.annotation.Validated;
+
 import javax.persistence.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -11,6 +13,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@Validated
 public class Flight {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,9 +1,12 @@
 package com.moveinsync.flightbooking.controller;
 
 import com.moveinsync.flightbooking.dto.FlightDto;
+import com.moveinsync.flightbooking.exceptions.InvalidFlightException;
 import com.moveinsync.flightbooking.model.Flight;
 import com.moveinsync.flightbooking.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -15,17 +18,22 @@ public class AdminController {
     private AdminService adminService;
 
     @PostMapping("/add")
-    public Map<String, String> add(@RequestBody FlightDto flightDto) {
-        Flight flight = new Flight(flightDto.getFlightNumber(), flightDto.getDepartureAirport(), flightDto.getDepartureTime(), flightDto.getDate(), flightDto.getArrivalAirport(), flightDto.getArrivalTime(), flightDto.getFlightDuration(), flightDto.getTicketPrice(), flightDto.getTotalSeats(), flightDto.getAirlineName(), flightDto.getAircraftType(), flightDto.getFlightSeatClasses(), flightDto.getSeats());
-        Map<String, String> response = new HashMap<>();
-        boolean success = adminService.addFlight(flight);
-        if (success) {
-            response.put("Status", "Success");
-        } else {
-            response.put("Status", "Failed");
+    public ResponseEntity<Map<String, String>> add(@RequestBody FlightDto flightDto) throws InvalidFlightException {
+        try {
+            Flight flight = new Flight(flightDto.getFlightNumber(), flightDto.getDepartureAirport(), flightDto.getDepartureTime(), flightDto.getDate(), flightDto.getArrivalAirport(), flightDto.getArrivalTime(), flightDto.getFlightDuration(), flightDto.getTicketPrice(), flightDto.getTotalSeats(), flightDto.getAirlineName(), flightDto.getAircraftType(), flightDto.getFlightSeatClasses(), flightDto.getSeats());
+            boolean success = adminService.addFlight(flight);
+            Map<String, String> response = new HashMap<>();
+            if (success) {
+                response.put("Status", "Success");
+            } else {
+                response.put("Status", "Failed");
+            }
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception ex) {
+            throw new InvalidFlightException("Invalid flight data");
         }
-        return response;
     }
+
 
     @DeleteMapping("/delete/{flightNumber}")
     public Map<String, String> delete(@PathVariable String flightNumber) {

@@ -1,6 +1,7 @@
 package com.moveinsync.flightbooking.controller;
 
 import com.moveinsync.flightbooking.dto.FlightDto;
+import com.moveinsync.flightbooking.exceptions.FlightAuthException;
 import com.moveinsync.flightbooking.model.Flight;
 import com.moveinsync.flightbooking.model.SeatType;
 import com.moveinsync.flightbooking.model.User;
@@ -12,9 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.message.AuthException;
 import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class UserController {
@@ -31,16 +34,16 @@ public class UserController {
     private UserRepo userRepo;
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody User userDto) {
+    public ResponseEntity<?> registerUser(@RequestBody User userDto) throws FlightAuthException {
         if (userService.usernameExists(userDto.getUsername()) != null) {
-            return ResponseEntity.badRequest().body("Username is already taken");
+            throw new FlightAuthException("Username is already taken");
         }
         userService.registerUser(userDto);
 
         return ResponseEntity.ok().body("User registered successfully");
     }
     @GetMapping("/users")
-    public List<User> showallusers(@RequestHeader HashMap request) {
+    public List<User> showallusers(@RequestHeader Map request) {
         String token = request.get("authorization").toString().substring(7);
         System.out.println(token);
         return userService.showall(token);
