@@ -1,11 +1,9 @@
 package com.moveinsync.flightbooking.service;
 
 import com.moveinsync.flightbooking.model.Flight;
-import com.moveinsync.flightbooking.model.Flightseat;
+import com.moveinsync.flightbooking.model.FlightSeat;
 import com.moveinsync.flightbooking.repository.FlightRepo;
-import com.moveinsync.flightbooking.repository.ReportRepo;
 import com.moveinsync.flightbooking.repository.SeatRepo;
-import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,13 +26,13 @@ public class Flightservice {
         return flightRepo.findAll();
     }
 
-    public List<Flightseat> getallseatsbyflightid(Long id){
+    public List<FlightSeat> getallseatsbyflightid(Long id){
         return seatRepo.findAllByFlightId(id);
     }
 
     public String bookaseat(Long id){
         Long user_Id=123L;
-        Optional<Flightseat> seat=seatRepo.findById(id);
+        Optional<FlightSeat> seat=seatRepo.findById(id);
         if(seat.isPresent()){
             if(seat.get().isBooked()){
                 return "This seat is already booked";
@@ -51,7 +49,7 @@ public class Flightservice {
     }
     public String deleteaseat(Long seatid){
         Long user_Id=123L;
-        Optional<Flightseat> seat=seatRepo.findById(seatid);
+        Optional<FlightSeat> seat=seatRepo.findById(seatid);
         if(seat.isPresent() &&user_Id.equals(seat.get().getUserId())){
             seat.get().setUserId(null);
             seat.get().setBooked(false);
