@@ -1,5 +1,6 @@
 package com.moveinsync.flightbooking.service;
 
+import com.moveinsync.flightbooking.configuration.JwtUtil;
 import com.moveinsync.flightbooking.model.Flight;
 import com.moveinsync.flightbooking.model.FlightSeat;
 import com.moveinsync.flightbooking.model.User;
@@ -27,6 +28,9 @@ public class Flightservice {
     @Autowired
     UserRepo userRepo;
 
+    @Autowired
+    JwtUtil jwtUtil;
+
     public List<Flight> getallflights() {
         return flightRepo.findAll();
     }
@@ -35,8 +39,10 @@ public class Flightservice {
         return seatRepo.findAllByFlightId(id);
     }
 
-    public String bookaseat(Long id) {
-        Long user_Id = 123L;
+    public String bookaseat(Long id, String token) {
+        String username = jwtUtil.extractUsername(token);
+        User curUser = userRepo.findByUsername(username);
+        Long userId = curUser.getId();
         Optional<FlightSeat> seat = seatRepo.findById(id);
         if (seat.isPresent()) {
             if (seat.get().isBooked()) {
@@ -46,17 +52,19 @@ public class Flightservice {
             Double ticketprice = seat.get().getTicketPrice();
             paymentservice.dopayment(flightNumber, ticketprice);
             seat.get().setBooked(true);
-            seat.get().setUserId(user_Id);
+            seat.get().setUserId(userId);
             seatRepo.save(seat.get());
             return "Your seat booked successfully";
         }
         return "Seat id is invalid";
     }
 
-    public String deleteaseat(Long seatid) {
-        Long user_Id = 123L;
+    public String deleteaseat(Long seatid, String token) {
+        String username = jwtUtil.extractUsername(token);
+        User curUser = userRepo.findByUsername(username);
+        Long userId = curUser.getId();
         Optional<FlightSeat> seat = seatRepo.findById(seatid);
-        if (seat.isPresent() && user_Id.equals(seat.get().getUserId())) {
+        if (seat.isPresent() && userId.equals(seat.get().getUserId())) {
             seat.get().setUserId(null);
             seat.get().setBooked(false);
             seatRepo.save(seat.get());
@@ -65,9 +73,9 @@ public class Flightservice {
         }
         return "Its not Your seat Check your seat number first";
     }
-    public List<FlightSeat> getseatsrelatedtouser(){
-        String Username="Hardik";
-        User user=userRepo.findByUsername(Username);
+    public List<FlightSeat> getseatsrelatedtouser(String token){
+        String username = jwtUtil.extractUsername(token);
+        User user = userRepo.findByUsername(username);
         return seatRepo.findAllByUserId(user.getId());
     }
 }

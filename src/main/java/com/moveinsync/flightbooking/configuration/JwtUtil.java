@@ -39,8 +39,15 @@ public class JwtUtil {
     }
 
     public String extractUsername(String token) {
-        return Jwts.parser().setSigningKey(Secret).parseClaimsJws(token).getBody().getSubject();
+        try {
+            Claims claims = Jwts.parser().setSigningKey(Secret).parseClaimsJws(token).getBody();
+            return claims.getSubject();
+        } catch (JwtException | IllegalArgumentException e) {
+            // log the exception
+            return null;
+        }
     }
+
 
     public boolean isTokenExpired(String token) {
         return Jwts.parser().setSigningKey(Secret).parseClaimsJws(token).getBody().getExpiration().before(new Date());
