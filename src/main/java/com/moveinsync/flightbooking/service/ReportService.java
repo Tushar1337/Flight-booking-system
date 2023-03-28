@@ -57,7 +57,7 @@ public class ReportService {
             table.setSpacingAfter(10);
 
             // add table headers
-            PdfPCell cell = new PdfPCell(new Phrase("Flight ID"));
+            PdfPCell cell = new PdfPCell(new Phrase("Flight Number"));
             cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
             table.addCell(cell);
             cell = new PdfPCell(new Phrase("Flight Revenue"));
