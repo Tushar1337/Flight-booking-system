@@ -85,7 +85,7 @@ public class Flightservice {
             seat.get().setBooked(true);
             Long flightId=seat.get().getFlight().getId();
             Double ticketprice = calculateTicketPrice(seat.get().getFlight().getId(), seat.get().getTicketPrice());
-            paymentservice.dopayment(flightId,ticketprice);
+            paymentservice.dopayment(seat.get().getFlight().getFlightNumber(),ticketprice);
             seat.get().setUserId(user_Id);
             seatRepo.save(seat.get());
             return "Your seat booked successfully";
