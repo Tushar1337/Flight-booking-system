@@ -20,7 +20,7 @@ public class AdminController {
         return adminService.addFlight(flight);
     }
 
-    @PutMapping("/add")
+    @PutMapping("/update")
     public Flight update(@RequestBody FlightDto flightDto){
         return adminService.updateFlight(flightDto);
     }

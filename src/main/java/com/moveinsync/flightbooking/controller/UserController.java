@@ -55,12 +55,5 @@ public class UserController {
         return userFlightService.findFlightWithClass(date1, source, destination,seatType);
     }
 
-
-
 }
 
-//{
-//    "date":"2023-03-24",
-//    "source":"Indira Gandhi International Airport",
-//    "destination":"Bangalore International Airport Limited Airport"
-//}

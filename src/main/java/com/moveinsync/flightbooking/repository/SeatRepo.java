@@ -12,4 +12,7 @@ import java.util.List;
 public interface SeatRepo extends JpaRepository<FlightSeat,Long> {
     @Query("SELECT s FROM FlightSeat s WHERE s.flight.id = :flightId")
     List<FlightSeat> findAllByFlightId(@Param("flightId") Long flightId);
+
+    @Query("select count(*) from FlightSeat f where f.flight.id=:flightId and f.booked=false")
+    long getNumUnsoldSeatsForFlight(Long flightId);
 }

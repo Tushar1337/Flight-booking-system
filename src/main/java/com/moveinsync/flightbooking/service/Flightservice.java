@@ -7,6 +7,9 @@ import com.moveinsync.flightbooking.repository.SeatRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,12 +25,54 @@ public class Flightservice {
     @Autowired
     Paymentservice paymentservice;
 
+
+
+    private static final long MAX_PRICE_INCREASE_PERCENTAGE = 50;
+    private static final long DAYS_BEFORE_DEPARTURE_TO_MAX_PRICE_INCREASE = 60;
+
+    public Double calculateTicketPrice(long flightId,double ticketPrice) {
+
+        long numUnsoldSeats = seatRepo.getNumUnsoldSeatsForFlight(flightId);
+        double BASE_TICKET_PRICE = ticketPrice;
+        Flight flight = flightRepo.findById(flightId);
+        LocalDate currentDate = LocalDate.now();
+        long daysUntilDeparture = ChronoUnit.DAYS.between((Temporal) currentDate, (Temporal) flight.getDate().toLocalDate()); // Implement this method to calculate days until departure
+
+        // Calculate price increase percentage based on number of unsold seats
+        Double priceIncreasePercentage = 0.0;
+        if (numUnsoldSeats > 0) {
+            priceIncreasePercentage = (100.0 * (MAX_PRICE_INCREASE_PERCENTAGE * numUnsoldSeats)) / (numUnsoldSeats + 10);
+            if (priceIncreasePercentage > MAX_PRICE_INCREASE_PERCENTAGE) {
+                priceIncreasePercentage = MAX_PRICE_INCREASE_PERCENTAGE * 1.0;
+            }
+        }
+
+        // Calculate price increase percentage based on days until departure
+        if (daysUntilDeparture <= DAYS_BEFORE_DEPARTURE_TO_MAX_PRICE_INCREASE) {
+            long daysUntilMaxPriceIncrease = DAYS_BEFORE_DEPARTURE_TO_MAX_PRICE_INCREASE - daysUntilDeparture;
+            long maxPriceIncreasePercentage = (daysUntilMaxPriceIncrease / 7) * 10;
+            priceIncreasePercentage += maxPriceIncreasePercentage;
+        }
+        System.out.println(BASE_TICKET_PRICE + (BASE_TICKET_PRICE * priceIncreasePercentage / 100));
+        return BASE_TICKET_PRICE + (BASE_TICKET_PRICE * priceIncreasePercentage / 100);
+    }
+
     public List<Flight> getallflights(){
-        return flightRepo.findAll();
+        List<Flight> flightList = flightRepo.findAll();
+        flightList.stream().forEach((flight)->{
+            flight.getSeats().forEach((seat)->{
+                seat.setTicketPrice(calculateTicketPrice(flight.getId(), seat.getTicketPrice()));
+            });
+        });
+        return flightList;
     }
 
     public List<FlightSeat> getallseatsbyflightid(Long id){
-        return seatRepo.findAllByFlightId(id);
+        List<FlightSeat> flightSeatList = seatRepo.findAllByFlightId(id);
+        flightSeatList.forEach((seat)->{
+            seat.setTicketPrice(calculateTicketPrice(id, seat.getTicketPrice()));
+        });
+        return flightSeatList;
     }
 
     public String bookaseat(Long id){
@@ -39,7 +84,7 @@ public class Flightservice {
             }
             seat.get().setBooked(true);
             Long flightId=seat.get().getFlight().getId();
-            Double ticketprice=seat.get().getTicketPrice();
+            Double ticketprice = calculateTicketPrice(seat.get().getFlight().getId(), seat.get().getTicketPrice());
             paymentservice.dopayment(flightId,ticketprice);
             seat.get().setUserId(user_Id);
             seatRepo.save(seat.get());
