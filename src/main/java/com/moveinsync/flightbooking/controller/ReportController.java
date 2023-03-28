@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReportController {
     @Autowired
     ReportService reportService;
-    @GetMapping("/generatereport/{flightId}")
-    public String generatereports(@PathVariable("flightId") Long flightId){
-        return reportService.generateReports(flightId);
+    @GetMapping("/generatereport/{flightNumber}")
+    public String generatereports(@PathVariable("flightNumber") String  flightNumber){
+        return reportService.generateReports(flightNumber);
     }
 }

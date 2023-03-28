@@ -19,11 +19,11 @@ public class ReportService {
     FlightRepo flightRepo;
 
 
-    public String generateReports(Long flightId){
-        Optional<Flight> flight=flightRepo.findById(Math.toIntExact(flightId));
-        if(flight.isPresent()){
-            Reportmodel report=reportRepo.findByFlightId(flightId);
-            return "Your flight with flightNumber "+flight.get().getFlightNumber()+" has generated a revenue of "+report.getRevenueGenerated()+" with the booked seats are "+report.getBookedseats();
+    public String generateReports(String flightNumber){
+        Flight flight=flightRepo.findByFlightNumberIgnoreCase(flightNumber);
+        if(flight != null){
+            Reportmodel report=reportRepo.findByFlightNumber(flightNumber);
+            return "Your flight with flightNumber "+flight.getFlightNumber()+" has generated a revenue of "+report.getRevenueGenerated()+" with the booked seats are "+report.getBookedseats();
         }
         return "This flight doesn't exist";
     }
