@@ -10,6 +10,11 @@ import com.moveinsync.flightbooking.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,12 +36,50 @@ public class Flightservice {
     @Autowired
     JwtUtil jwtUtil;
 
-    public List<Flight> getallflights() {
-        return flightRepo.findAll();
+    private static final long MAX_PRICE_INCREASE_PERCENTAGE = 50;
+    private static final long DAYS_BEFORE_DEPARTURE_TO_MAX_PRICE_INCREASE = 60;
+    private static final long MAX_MINUTES_BEFORE_CANCEL_TICKET = 240;
+
+    public Double calculateTicketPrice(long flightId,double ticketPrice) {
+
+        long numUnsoldSeats = seatRepo.getNumUnsoldSeatsForFlight(flightId);
+        double BASE_TICKET_PRICE = ticketPrice;
+        Flight flight = flightRepo.findById(flightId);
+        LocalDate currentDate = LocalDate.now();
+        long daysUntilDeparture = ChronoUnit.DAYS.between((Temporal) currentDate, (Temporal) flight.getDate().toLocalDate()); // Implement this method to calculate days until departure
+
+
+        Double priceIncreasePercentage = 0.0;
+        if (numUnsoldSeats > 0) {
+            priceIncreasePercentage = (100.0 * (MAX_PRICE_INCREASE_PERCENTAGE * numUnsoldSeats)) / (numUnsoldSeats + 10);
+            if (priceIncreasePercentage > MAX_PRICE_INCREASE_PERCENTAGE) {
+                priceIncreasePercentage = MAX_PRICE_INCREASE_PERCENTAGE * 1.0;
+            }
+        }
+        if (daysUntilDeparture <= DAYS_BEFORE_DEPARTURE_TO_MAX_PRICE_INCREASE) {
+            long daysUntilMaxPriceIncrease = DAYS_BEFORE_DEPARTURE_TO_MAX_PRICE_INCREASE - daysUntilDeparture;
+            long maxPriceIncreasePercentage = (daysUntilMaxPriceIncrease / 7) * 10;
+            priceIncreasePercentage += maxPriceIncreasePercentage;
+        }
+        return BASE_TICKET_PRICE + (BASE_TICKET_PRICE * priceIncreasePercentage / 100);
     }
 
-    public List<FlightSeat> getallseatsbyflightid(Long id) {
-        return seatRepo.findAllByFlightId(id);
+    public List<Flight> getallflights(){
+        List<Flight> flightList = flightRepo.findAll();
+        flightList.stream().forEach((flight)->{
+            flight.getSeats().forEach((seat)->{
+                seat.setTicketPrice(calculateTicketPrice(flight.getId(), seat.getTicketPrice()));
+            });
+        });
+        return flightList;
+    }
+
+    public List<FlightSeat> getallseatsbyflightid(Long id){
+        List<FlightSeat> flightSeatList = seatRepo.findAllByFlightId(id);
+        flightSeatList.forEach((seat)->{
+            seat.setTicketPrice(calculateTicketPrice(id, seat.getTicketPrice()));
+        });
+        return flightSeatList;
     }
 
     public String bookaseat(Long id, String token) {
@@ -49,7 +92,7 @@ public class Flightservice {
                 return "This seat is already booked";
             }
             String flightNumber = seat.get().getFlight().getFlightNumber();
-            Double ticketprice = seat.get().getTicketPrice();
+            Double ticketprice = calculateTicketPrice(seat.get().getFlight().getId(), seat.get().getTicketPrice());
             paymentservice.dopayment(flightNumber, ticketprice);
             seat.get().setBooked(true);
             seat.get().setUserId(userId);
@@ -65,6 +108,16 @@ public class Flightservice {
         Long userId = curUser.getId();
         Optional<FlightSeat> seat = seatRepo.findById(seatid);
         if (seat.isPresent() && userId.equals(seat.get().getUserId())) {
+            LocalDateTime currentDate = LocalDateTime.now();
+            LocalDateTime flightDate = seat.get().getFlight().getArrivalTime();
+
+            Duration duration = Duration.between(currentDate, flightDate);
+            long minutes = Math.abs(duration.toMinutes());
+
+            if(MAX_MINUTES_BEFORE_CANCEL_TICKET>=minutes){
+                return "You can't cancel seat...";
+            }
+
             seat.get().setUserId(null);
             seat.get().setBooked(false);
             seatRepo.save(seat.get());

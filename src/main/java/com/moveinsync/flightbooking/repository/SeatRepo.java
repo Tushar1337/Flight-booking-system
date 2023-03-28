@@ -14,4 +14,7 @@ public interface SeatRepo extends JpaRepository<FlightSeat,Long> {
     List<FlightSeat> findAllByFlightId(@Param("flightId") Long flightId);
 
     List<FlightSeat> findAllByUserId(Long userid);
+
+    @Query("select count(*) from FlightSeat f where f.flight.id=:flightId and f.booked=false")
+    long getNumUnsoldSeatsForFlight(Long flightId);
 }
