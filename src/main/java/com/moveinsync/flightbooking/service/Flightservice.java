@@ -7,7 +7,9 @@ import com.moveinsync.flightbooking.repository.SeatRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.List;
@@ -29,6 +31,7 @@ public class Flightservice {
 
     private static final long MAX_PRICE_INCREASE_PERCENTAGE = 50;
     private static final long DAYS_BEFORE_DEPARTURE_TO_MAX_PRICE_INCREASE = 60;
+    private static final long MAX_MINUTES_BEFORE_CANCEL_TICKET = 240;
 
     public Double calculateTicketPrice(long flightId,double ticketPrice) {
 
@@ -38,7 +41,7 @@ public class Flightservice {
         LocalDate currentDate = LocalDate.now();
         long daysUntilDeparture = ChronoUnit.DAYS.between((Temporal) currentDate, (Temporal) flight.getDate().toLocalDate()); // Implement this method to calculate days until departure
 
-        // Calculate price increase percentage based on number of unsold seats
+
         Double priceIncreasePercentage = 0.0;
         if (numUnsoldSeats > 0) {
             priceIncreasePercentage = (100.0 * (MAX_PRICE_INCREASE_PERCENTAGE * numUnsoldSeats)) / (numUnsoldSeats + 10);
@@ -46,14 +49,11 @@ public class Flightservice {
                 priceIncreasePercentage = MAX_PRICE_INCREASE_PERCENTAGE * 1.0;
             }
         }
-
-        // Calculate price increase percentage based on days until departure
         if (daysUntilDeparture <= DAYS_BEFORE_DEPARTURE_TO_MAX_PRICE_INCREASE) {
             long daysUntilMaxPriceIncrease = DAYS_BEFORE_DEPARTURE_TO_MAX_PRICE_INCREASE - daysUntilDeparture;
             long maxPriceIncreasePercentage = (daysUntilMaxPriceIncrease / 7) * 10;
             priceIncreasePercentage += maxPriceIncreasePercentage;
         }
-        System.out.println(BASE_TICKET_PRICE + (BASE_TICKET_PRICE * priceIncreasePercentage / 100));
         return BASE_TICKET_PRICE + (BASE_TICKET_PRICE * priceIncreasePercentage / 100);
     }
 
@@ -92,10 +92,22 @@ public class Flightservice {
         }
         return "Seat id is invalid";
     }
+
     public String deleteaseat(Long seatid){
         Long user_Id=123L;
         Optional<FlightSeat> seat=seatRepo.findById(seatid);
+
         if(seat.isPresent() &&user_Id.equals(seat.get().getUserId())){
+            LocalDateTime currentDate = LocalDateTime.now();
+            LocalDateTime flightDate = seat.get().getFlight().getArrivalTime();
+
+            Duration duration = Duration.between(currentDate, flightDate);
+            long minutes = Math.abs(duration.toMinutes());
+
+            if(MAX_MINUTES_BEFORE_CANCEL_TICKET>=minutes){
+                return "You can't cancel seat...";
+            }
+
             seat.get().setUserId(null);
             seat.get().setBooked(false);
             seatRepo.save(seat.get());

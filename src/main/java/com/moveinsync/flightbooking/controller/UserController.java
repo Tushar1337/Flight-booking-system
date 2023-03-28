@@ -1,6 +1,6 @@
 package com.moveinsync.flightbooking.controller;
 
-import com.moveinsync.flightbooking.dto.FlightDto;
+
 import com.moveinsync.flightbooking.model.Flight;
 import com.moveinsync.flightbooking.model.SeatType;
 import com.moveinsync.flightbooking.model.User;
