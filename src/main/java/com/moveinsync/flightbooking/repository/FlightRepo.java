@@ -21,4 +21,6 @@ public interface FlightRepo extends JpaRepository<Flight,Integer> {
     public Flight findByFlightNumberIgnoreCase(String flightNumber);
     public void deleteByFlightNumberIgnoreCase(String flightNumber);
 
+    Flight findById(Long flightId);
+
 }
