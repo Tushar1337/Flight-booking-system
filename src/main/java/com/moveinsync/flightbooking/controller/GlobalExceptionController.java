@@ -1,9 +1,6 @@
 package com.moveinsync.flightbooking.controller;
 
-import com.moveinsync.flightbooking.exceptions.FlightAuthException;
-import com.moveinsync.flightbooking.exceptions.ExceptionResponse;
-import com.moveinsync.flightbooking.exceptions.InvalidFlightException;
-import com.moveinsync.flightbooking.exceptions.UserFlightException;
+import com.moveinsync.flightbooking.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -40,4 +37,12 @@ public class GlobalExceptionController {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(value = {UsernamePasswordException.class})
+    public ResponseEntity<ExceptionResponse> usernamePasswordException(Exception ex, WebRequest request) {
+        ExceptionResponse response = new ExceptionResponse(request);
+        response.setStatus(HttpStatus.OK.toString());
+        response.setError(ex.getClass().getSimpleName());
+        response.setMessage(ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

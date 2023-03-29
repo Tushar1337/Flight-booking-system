@@ -40,12 +40,24 @@ public class Flight {
     private String airlineName;
     @Column(name = "aircraft_type")
     private String aircraftType;
+
+    @Column(name = "departure_city")
+    private  String departureCity;
+
+    @Column(name = "arrival_city")
+    private  String arrivalCity;
+
+    @Column(name = "terminal")
+    private  String terminal;
+
+    @Column(name = "gate_no")
+    private  String gateNo;
     @Transient
     private List<FlightSeatClass> flightSeatClasses;
     @OneToMany(mappedBy = "flight", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<FlightSeat> seats;
-    public Flight(String flightNumber, String departureAirport, LocalDateTime departureTime, Date date, String arrivalAirport, LocalDateTime arrivalTime, Duration flightDuration, Double ticketPrice, Integer totalSeats, String airlineName, String aircraftType, List<FlightSeatClass> flightSeatClasses,List<FlightSeat> seats) {
+    public Flight(String flightNumber, String departureAirport, LocalDateTime departureTime, Date date, String arrivalAirport, LocalDateTime arrivalTime, Duration flightDuration, Double ticketPrice, Integer totalSeats, String airlineName, String aircraftType, String arrivalCity, String departureCity, String gateNo, String terminal, List<FlightSeatClass> flightSeatClasses,List<FlightSeat> seats) {
         this.flightNumber = flightNumber;
         this.departureAirport = departureAirport;
         this.departureTime = departureTime;
@@ -59,6 +71,10 @@ public class Flight {
         this.aircraftType = aircraftType;
         this.flightSeatClasses = flightSeatClasses;
         this.seats = seats;
+        this.departureCity = departureCity;
+        this.arrivalCity = arrivalCity;
+        this.terminal = terminal;
+        this.gateNo = gateNo;
         this.generateSeats();
     }
     public Flight() {

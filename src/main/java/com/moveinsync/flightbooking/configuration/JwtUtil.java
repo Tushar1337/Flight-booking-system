@@ -53,4 +53,17 @@ public class JwtUtil {
         return Jwts.parser().setSigningKey(Secret).parseClaimsJws(token).getBody().getExpiration().before(new Date());
     }
 
+    public boolean isAdmin(String token) {
+        try {
+            Claims claims = Jwts.parser().setSigningKey(Secret).parseClaimsJws(token).getBody();
+            System.out.println(claims);
+            Boolean isAdmin = (Boolean) claims.get("isadmin");
+            return isAdmin != null && isAdmin;
+        } catch (JwtException | IllegalArgumentException e) {
+            // log the exception
+            return false;
+        }
+    }
+
+
 }

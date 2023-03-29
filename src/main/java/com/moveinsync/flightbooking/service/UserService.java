@@ -2,6 +2,8 @@ package com.moveinsync.flightbooking.service;
 
 import com.moveinsync.flightbooking.configuration.JwtUtil;
 import com.moveinsync.flightbooking.configuration.PasswordUtil;
+import com.moveinsync.flightbooking.exceptions.FlightAuthException;
+import com.moveinsync.flightbooking.exceptions.UsernamePasswordException;
 import com.moveinsync.flightbooking.model.User;
 import com.moveinsync.flightbooking.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,52 +21,44 @@ public class UserService {
     @Autowired
     JwtUtil jwtUtil;
 
-    public User usernameExists(String username) {
-        return userRepo.findByUsername(username);
+    public void usernameExists(String username) throws FlightAuthException {
+        if (userRepo.findByUsername(username) != null)
+            throw new FlightAuthException("Username is already taken");
     }
 
     public List<User> showall(String token) {
-        System.out.println(jwtUtil.validateToken(token));
         return userRepo.findAll();
     }
-    public String save(User user) {
-        userRepo.save(user);
-        return ("Saved");
-    }
+//    public String save(User user) {
+//        userRepo.save(user);
+//        return ("Saved");
+//    }
 
     public User registerUser(User userDto) {
-
-        // save the user to the database
         userDto.setPassword(PasswordUtil.encode(userDto.getPassword()));
         User savedUser = userRepo.save(userDto);
-
-        // generate a JWT token
         String token = jwtUtil.generateToken(savedUser);
-        System.out.println(token);
-
-        // set the JWT token on the user object
         savedUser.setToken(token);
-
         return savedUser;
     }
 
-    public String loginUser(User userDto) {
-
-        String curusername = userDto.getUsername();
-
-        User curuser = userRepo.findByUsername(curusername);
-
-        System.out.println(PasswordUtil.match(userDto.getPassword(),curuser.getPassword()));
-
+    public String loginUser(User userDto) throws  UsernamePasswordException {
+        String curUsername = userDto.getUsername();
+        User curuser = userRepo.findByUsername(curUsername);
         if (PasswordUtil.match(userDto.getPassword(),curuser.getPassword())) {
-            // generate a JWT token
             String token = jwtUtil.generateToken(curuser);
-
-            // set the JWT token on the user object
             userDto.setToken(token);
-
             return token;
         }
-        return null;
+        throw new UsernamePasswordException("Wrong Username or Password");
+    }
+
+    public String updateUser(User userDto, String token) {
+        User curUser = userRepo.findByUsername(jwtUtil.extractUsername(token));
+        curUser.setUsername(userDto.getUsername());
+        curUser.setPassword(PasswordUtil.encode(userDto.getPassword()));
+        curUser.setEmail(userDto.getEmail());
+        userRepo.save(curUser);
+        return ("Details updated successfully");
     }
 }

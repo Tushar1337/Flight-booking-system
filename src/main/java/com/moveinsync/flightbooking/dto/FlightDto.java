@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.sql.Date;
@@ -32,5 +33,12 @@ public class FlightDto{
     private String aircraftType;
     private List<FlightSeatClass> flightSeatClasses;
     private List<FlightSeat> seats;
+    private  String departureCity;
+
+    private  String arrivalCity;
+
+    private  String terminal;
+
+    private  String gateNo;
 }
 

@@ -1,5 +1,7 @@
 package com.moveinsync.flightbooking.service;
 
+import com.convertapi.client.Config;
+import com.convertapi.client.ConvertApi;
 import com.moveinsync.flightbooking.configuration.JwtUtil;
 import com.moveinsync.flightbooking.model.Flight;
 import com.moveinsync.flightbooking.model.FlightSeat;
@@ -7,9 +9,14 @@ import com.moveinsync.flightbooking.model.User;
 import com.moveinsync.flightbooking.repository.FlightRepo;
 import com.moveinsync.flightbooking.repository.SeatRepo;
 import com.moveinsync.flightbooking.repository.UserRepo;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,6 +42,9 @@ public class Flightservice {
 
     @Autowired
     JwtUtil jwtUtil;
+
+    @Autowired
+    EmailService emailService;
 
     private static final long MAX_PRICE_INCREASE_PERCENTAGE = 50;
     private static final long DAYS_BEFORE_DEPARTURE_TO_MAX_PRICE_INCREASE = 60;
@@ -97,6 +107,7 @@ public class Flightservice {
             seat.get().setBooked(true);
             seat.get().setUserId(userId);
             seatRepo.save(seat.get());
+            boardingPassGenerator(seat.get().getFlight(), curUser, seat.get(),token);
             return "Your seat booked successfully";
         }
         return "Seat id is invalid";
@@ -131,4 +142,76 @@ public class Flightservice {
         User user = userRepo.findByUsername(username);
         return seatRepo.findAllByUserId(user.getId());
     }
+
+    public void boardingPassGenerator(Flight flight, User user, FlightSeat flightSeat, String token) {
+        Config.setDefaultSecret("T3APGExm27JtAOwB");
+        String username = jwtUtil.extractUsername(token);
+        String emailUser = userRepo.findByUsername(username).getEmail();
+        try {
+            File htmlFile = new File("src/main/resources/templates/flight-ticket.html");
+            Document document = Jsoup.parse(htmlFile, "UTF-8");
+
+            Element flightNumElement = document.select(".flight strong").first();
+            flightNumElement.text(flight.getFlightNumber());
+
+            Element firstCityElement = document.select(".first").first();
+            Element firstCityNameElement = firstCityElement.selectFirst("small");
+            Element firstCitySmallElement = firstCityElement.selectFirst("strong");
+            firstCityNameElement.text(flight.getDepartureCity());
+            firstCitySmallElement.text(flight.getDepartureCity().substring(0,3));
+
+            Element secondCityElement = document.select(".second").first();
+            Element secondCityNameElement = secondCityElement.selectFirst("small");
+            Element secondCitySmallElement = secondCityElement.selectFirst("strong");
+            secondCityNameElement.text(flight.getArrivalCity());
+            secondCitySmallElement.text(flight.getArrivalCity().substring(0,3));
+
+            Element terminalElement = document.select(".term strong em").first();
+            terminalElement.text(flight.getTerminal());
+
+            Element gateElement = document.select(".gate strong em").first();
+            gateElement.text(flight.getGateNo());
+
+            Element seatElement = document.select(".seat strong").first();
+            int seatNumber = flightSeat.getSeatNumber();
+            seatElement.text(String.valueOf(seatNumber+1));
+
+            Element seatTypeElement = document.select(".type strong").first();
+            seatTypeElement.text(flightSeat.getSeatType().toString());
+
+            Element boardingElement = document.select(".board strong").first();
+            boardingElement.text(flight.getDepartureTime().minusHours(1).toString().substring(11));
+
+            Element departureElement = document.select(".depart strong").first();
+            departureElement.text(flight.getDepartureTime().toString().substring(11));
+
+            Element durationElement = document.select(".duration strong").first();
+            Duration duration = Duration.between(flight.getDepartureTime(), flight.getArrivalTime());
+            long hours = duration.toHours();
+            long minutes = duration.toMinutes() % 60;
+            String formattedDuration = String.format("%d:%02d hrs", hours, minutes);
+            durationElement.text(formattedDuration);
+
+            Element arrivalElement = document.select(".arrival strong").first();
+            arrivalElement.text(flight.getArrivalTime().toString().substring(11));
+
+            Element passengerElement = document.select(".passenger strong").first();
+            passengerElement.text(user.getUsername());
+
+            Element dateElement = document.select(".date strong").first();
+            dateElement.text(flight.getDate().toString());
+
+            FileWriter writer = new FileWriter(htmlFile);
+            writer.write(document.outerHtml());
+            writer.close();
+
+            ConvertApi.convertFile(htmlFile.getPath(), "src/main/resources/templates/flight-ticket.pdf");
+            System.out.println(emailUser);
+            emailService.sendEmailWithAttachment(emailUser, "Boarding Pass", "Your boarding pass for your upcomming flight is ready!","src/main/resources/templates/flight-ticket.pdf");
+            System.out.println("Conversion successful");
+        } catch (Exception ex) {
+            System.err.println("Conversion failed: " + ex.getMessage());
+        }
+    }
+
 }

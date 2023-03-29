@@ -1,5 +1,6 @@
 package com.moveinsync.flightbooking.controller;
 
+import com.moveinsync.flightbooking.configuration.JwtUtil;
 import com.moveinsync.flightbooking.dto.FlightDto;
 import com.moveinsync.flightbooking.exceptions.InvalidFlightException;
 import com.moveinsync.flightbooking.model.Flight;
@@ -13,16 +14,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/flights/")
 public class AdminController {
     @Autowired
     private AdminService adminService;
 
+    @Autowired
+    JwtUtil jwtUtil;
     @PostMapping("/add")
-    public ResponseEntity<Map<String, String>> add(@RequestBody FlightDto flightDto) throws InvalidFlightException {
+    public ResponseEntity<Map<String, String>> add(@RequestBody FlightDto flightDto, @RequestHeader Map request) throws InvalidFlightException {
+        String token = request.get("authorization").toString().substring(7);
+        Map<String, String> response = new HashMap<>();
+        if (!jwtUtil.isAdmin(token)) {
+            response.put("message", "You are not authorized");
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
         try {
-            Flight flight = new Flight(flightDto.getFlightNumber(), flightDto.getDepartureAirport(), flightDto.getDepartureTime(), flightDto.getDate(), flightDto.getArrivalAirport(), flightDto.getArrivalTime(), flightDto.getFlightDuration(), flightDto.getTicketPrice(), flightDto.getTotalSeats(), flightDto.getAirlineName(), flightDto.getAircraftType(), flightDto.getFlightSeatClasses(), flightDto.getSeats());
+            Flight flight = new Flight(flightDto.getFlightNumber(), flightDto.getDepartureAirport(), flightDto.getDepartureTime(), flightDto.getDate(), flightDto.getArrivalAirport(), flightDto.getArrivalTime(), flightDto.getFlightDuration(), flightDto.getTicketPrice(), flightDto.getTotalSeats(), flightDto.getAirlineName(), flightDto.getAircraftType(), flightDto.getArrivalCity(), flightDto.getDepartureCity(),flightDto.getGateNo(),flightDto.getTerminal(), flightDto.getFlightSeatClasses(), flightDto.getSeats());
             boolean success = adminService.addFlight(flight);
-            Map<String, String> response = new HashMap<>();
             if (success) {
                 response.put("Status", "Success");
             } else {
@@ -36,8 +45,13 @@ public class AdminController {
 
 
     @DeleteMapping("/delete/{flightNumber}")
-    public Map<String, String> delete(@PathVariable String flightNumber) {
+    public Map<String, String> delete(@PathVariable String flightNumber, @RequestHeader Map request) {
         Map<String, String> response = new HashMap<>();
+        String token = request.get("authorization").toString().substring(7);
+        if (!jwtUtil.isAdmin(token)) {
+            response.put("message", "You are not authorized");
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED).getBody();
+        }
         boolean success = adminService.deleteFlight(flightNumber);
         if (success) {
             response.put("Status", "Success");
@@ -49,8 +63,13 @@ public class AdminController {
 
 
     @PutMapping("/update")
-    public Map<String, String> update(@RequestBody FlightDto flightDto) {
+    public Map<String, String> update(@RequestBody FlightDto flightDto, @RequestHeader Map request) {
         Map<String, String> response = new HashMap<>();
+        String token = request.get("authorization").toString().substring(7);
+        if (!jwtUtil.isAdmin(token)) {
+            response.put("message", "You are not authorized");
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED).getBody();
+        }
         boolean success = adminService.updateFlight(flightDto);
         if (success) {
             response.put("Status", "Success");

@@ -51,12 +51,16 @@ public class AdminService {
             Integer totalSeats = flightDto.getTotalSeats()==null?originalFlight.getTotalSeats():flightDto.getTotalSeats();
             String airline = flightDto.getAirlineName()==null?originalFlight.getAirlineName():flightDto.getAirlineName();
             String aircraft = flightDto.getAircraftType()==null?originalFlight.getAircraftType():flightDto.getAircraftType();
+            String arrivalCity = flightDto.getArrivalCity()==null?originalFlight.getArrivalCity():flightDto.getArrivalCity();
+            String departureCity = flightDto.getDepartureCity()==null?originalFlight.getDepartureCity():flightDto.getDepartureCity();
+            String terminal= flightDto.getTerminal()==null?originalFlight.getTerminal():flightDto.getTerminal();
+            String gateNo = flightDto.getGateNo()==null?originalFlight.getGateNo():flightDto.getGateNo();
             List<FlightSeatClass> flightSeatClasses = flightDto.getFlightSeatClasses()==null?originalFlight.getFlightSeatClasses():flightDto.getFlightSeatClasses();
             List<FlightSeat> seats = new ArrayList<>();
             while(flightRepo.findByFlightNumberIgnoreCase(flightNumber)!=null) {
                 flightRepo.deleteByFlightNumberIgnoreCase(flightNumber);
             }
-            Flight newFlight = new Flight(flightNumber,departureAirport,departureTime,date,arrivalAirport,arrivalTIme,duration,price,totalSeats,airline,aircraft,flightSeatClasses,seats);
+            Flight newFlight = new Flight(flightNumber,departureAirport,departureTime,date,arrivalAirport,arrivalTIme,duration,price,totalSeats,airline,aircraft,departureCity,arrivalCity,terminal,gateNo,flightSeatClasses,seats);
             flightRepo.save(newFlight);
             return true;
         } catch (Exception e) {
