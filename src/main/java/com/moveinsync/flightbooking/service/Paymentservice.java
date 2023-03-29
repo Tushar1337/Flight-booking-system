@@ -14,7 +14,7 @@ public class Paymentservice {
 
         Reportmodel report=reportRepo.findByFlightNumber(flightNumber);
 
-        report.setBookedseats(report.getBookedseats()+1);
+        report.setBookedSeats(report.getBookedSeats()+1);
         report.setRevenueGenerated(report.getRevenueGenerated()+ticketPrice);
 
         reportRepo.save(report);

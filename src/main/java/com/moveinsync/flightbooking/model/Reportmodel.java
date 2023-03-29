@@ -18,7 +18,7 @@ public class Reportmodel {
     private Long id;
 
     @Column(name = "Booked_seats")
-    private int Bookedseats=0;
+    private int bookedSeats=0;
 
     @Column(name = "Revenue_Generated")
     private Double revenueGenerated= (double) 0;

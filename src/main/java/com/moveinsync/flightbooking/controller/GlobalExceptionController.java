@@ -31,10 +31,10 @@ public class GlobalExceptionController {
     @ExceptionHandler(value = {FlightAuthException.class})
     public ResponseEntity<ExceptionResponse> handleAuthException(Exception ex, WebRequest request) {
         ExceptionResponse response = new ExceptionResponse(request);
-        response.setStatus(HttpStatus.BAD_REQUEST.toString());
+        response.setStatus(HttpStatus.UNAUTHORIZED.toString());
         response.setError(ex.getClass().getSimpleName());
         response.setMessage(ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(value = {UsernamePasswordException.class})

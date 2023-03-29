@@ -79,13 +79,14 @@ public class Flight {
     }
     public Flight() {
     }
+
     public void generateSeats() {
         seats = new ArrayList<>();
         for (int i = 1; i <= totalSeats; i++) {
-            FlightSeat seat = new FlightSeat(this, i,ticketPrice);
+            FlightSeat seat = new FlightSeat(this, i, ticketPrice);
             seats.add(seat);
         }
-        flightSeatClasses.forEach((seat)->{
+        flightSeatClasses.forEach(seat -> {
             int index = seat.getSeatNumber();
             seats.get(index).setSeatType(seat.getSeatType());
             seats.get(index).setTicketPrice(seat.getTicketPrice());

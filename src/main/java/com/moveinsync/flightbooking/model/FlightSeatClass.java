@@ -2,7 +2,6 @@ package com.moveinsync.flightbooking.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.validation.annotation.Validated;
 
 @Getter
 @Setter

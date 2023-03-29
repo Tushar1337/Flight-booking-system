@@ -1,12 +1,9 @@
 package com.moveinsync.flightbooking.dto;
-
 import com.moveinsync.flightbooking.model.SeatType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.sql.Date;
 
 @Getter
 @Setter

@@ -5,10 +5,10 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 public class ReportDto {
-        private int Bookedseats;
+        private int bookedSeats;
 
         public ReportDto(int bookedseats, Double revenueGenerated, String flightNumber) {
-                Bookedseats = bookedseats;
+                bookedSeats = bookedseats;
                 this.revenueGenerated = revenueGenerated;
                 this.flightNumber = flightNumber;
         }

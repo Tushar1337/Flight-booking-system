@@ -9,6 +9,7 @@ import com.moveinsync.flightbooking.service.UserFlightService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.sql.Date;
 import java.util.*;
 
@@ -32,14 +33,14 @@ public class Flightcontroller {
     }
 
     @GetMapping("/getseatsrelatedtouser")
-    public List<FlightSeat> getseatsrelatedtouser(@RequestHeader Map request) {
-        String token = request.get("authorization").toString().substring(7);
+    public List<FlightSeat> getseatsrelatedtouser(@RequestHeader Map<String,String> request) {
+        String token = request.get("authorization").substring(7);
         return flightservice.getseatsrelatedtouser(token);
     }
 
     @PostMapping("/{seatid}")
-    public String booktheseat(@PathVariable("seatid") Long seatid, @RequestHeader Map request) {
-        String token = request.get("authorization").toString().substring(7);
+    public String booktheseat(@PathVariable("seatid") Long seatid, @RequestHeader Map<String,String> request) {
+        String token = request.get("authorization").substring(7);
         return flightservice.bookaseat(seatid, token);
     }
     @PostMapping("/search")
@@ -48,8 +49,8 @@ public class Flightcontroller {
         return userFlightService.findFlight(date1, searchDto.getSource(), searchDto.getDestination());
     }
     @DeleteMapping("/{seatid}")
-    public String cancelbooking(@PathVariable("seatid") Long seatid, @RequestHeader Map request) {
-        String token = request.get("authorization").toString().substring(7);
+    public String cancelbooking(@PathVariable("seatid") Long seatid, @RequestHeader Map<String,String> request) throws MessagingException {
+        String token = request.get("authorization").substring(7);
         return flightservice.deleteaseat(seatid, token);
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
+import java.util.Objects;
 
 @Service
 public class EmailService {
@@ -30,7 +31,19 @@ public class EmailService {
         helper.setText(text);
 
         FileSystemResource file = new FileSystemResource(new File(pathToAttachment));
-        helper.addAttachment(file.getFilename(), file);
+        helper.addAttachment(Objects.requireNonNull(file.getFilename()), file);
+
+        javaMailSender.send(message);
+    }
+
+    public void sendEmail(String toEmail, String subject, String text) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        helper.setTo(toEmail);
+        helper.setFrom("alitalia.airlines.tickets@outlook.com");
+        helper.setSubject(subject);
+        helper.setText(text);
 
         javaMailSender.send(message);
     }

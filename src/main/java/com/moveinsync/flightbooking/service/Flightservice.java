@@ -15,13 +15,13 @@ import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import java.io.File;
 import java.io.FileWriter;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,10 +53,9 @@ public class Flightservice {
     public Double calculateTicketPrice(long flightId,double ticketPrice) {
 
         long numUnsoldSeats = seatRepo.getNumUnsoldSeatsForFlight(flightId);
-        double BASE_TICKET_PRICE = ticketPrice;
         Flight flight = flightRepo.findById(flightId);
         LocalDate currentDate = LocalDate.now();
-        long daysUntilDeparture = ChronoUnit.DAYS.between((Temporal) currentDate, (Temporal) flight.getDate().toLocalDate()); // Implement this method to calculate days until departure
+        long daysUntilDeparture = ChronoUnit.DAYS.between(currentDate, flight.getDate().toLocalDate()); // Implement this method to calculate days until departure
 
 
         Double priceIncreasePercentage = 0.0;
@@ -71,24 +70,18 @@ public class Flightservice {
             long maxPriceIncreasePercentage = (daysUntilMaxPriceIncrease / 7) * 10;
             priceIncreasePercentage += maxPriceIncreasePercentage;
         }
-        return BASE_TICKET_PRICE + (BASE_TICKET_PRICE * priceIncreasePercentage / 100);
+        return ticketPrice + (ticketPrice * priceIncreasePercentage / 100);
     }
 
     public List<Flight> getallflights(){
         List<Flight> flightList = flightRepo.findAll();
-        flightList.stream().forEach((flight)->{
-            flight.getSeats().forEach((seat)->{
-                seat.setTicketPrice(calculateTicketPrice(flight.getId(), seat.getTicketPrice()));
-            });
-        });
+        flightList.forEach(flight-> flight.getSeats().forEach(seat-> seat.setTicketPrice(calculateTicketPrice(flight.getId(), seat.getTicketPrice()))));
         return flightList;
     }
 
     public List<FlightSeat> getallseatsbyflightid(Long id){
         List<FlightSeat> flightSeatList = seatRepo.findAllByFlightId(id);
-        flightSeatList.forEach((seat)->{
-            seat.setTicketPrice(calculateTicketPrice(id, seat.getTicketPrice()));
-        });
+        flightSeatList.forEach(seat-> seat.setTicketPrice(calculateTicketPrice(id, seat.getTicketPrice())));
         return flightSeatList;
     }
 
@@ -113,7 +106,7 @@ public class Flightservice {
         return "Seat id is invalid";
     }
 
-    public String deleteaseat(Long seatid, String token) {
+    public String deleteaseat(Long seatid, String token) throws MessagingException {
         String username = jwtUtil.extractUsername(token);
         User curUser = userRepo.findByUsername(username);
         Long userId = curUser.getId();
@@ -132,8 +125,9 @@ public class Flightservice {
             seat.get().setUserId(null);
             seat.get().setBooked(false);
             seatRepo.save(seat.get());
-            double refunded_ticket_price = (seat.get().getTicketPrice()) / 2;
-            return "Seat deleted successfully your refunded amount is " + refunded_ticket_price;
+            double refundedTicketPrice = (seat.get().getTicketPrice()) / 2;
+            emailService.sendEmail(curUser.getEmail(), "Canceled booking", "Your booking has been cancled");
+            return "Seat deleted successfully your refunded amount is " + refundedTicketPrice;
         }
         return "Its not Your seat Check your seat number first";
     }
@@ -206,9 +200,7 @@ public class Flightservice {
             writer.close();
 
             ConvertApi.convertFile(htmlFile.getPath(), "src/main/resources/templates/flight-ticket.pdf");
-            System.out.println(emailUser);
             emailService.sendEmailWithAttachment(emailUser, "Boarding Pass", "Your boarding pass for your upcomming flight is ready!","src/main/resources/templates/flight-ticket.pdf");
-            System.out.println("Conversion successful");
         } catch (Exception ex) {
             System.err.println("Conversion failed: " + ex.getMessage());
         }

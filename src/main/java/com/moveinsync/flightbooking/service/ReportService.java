@@ -1,25 +1,18 @@
 package com.moveinsync.flightbooking.service;
-
 import com.moveinsync.flightbooking.dto.ReportDto;
-import com.moveinsync.flightbooking.model.Flight;
 import com.moveinsync.flightbooking.model.Reportmodel;
 import com.moveinsync.flightbooking.repository.FlightRepo;
 import com.moveinsync.flightbooking.repository.ReportRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 
 @Service
 public class ReportService {
@@ -34,7 +27,7 @@ public class ReportService {
 
         List<Reportmodel> reportlist = reportRepo.findAll();
         for (Reportmodel report : reportlist) {
-            flightReports.add(new ReportDto(report.getBookedseats(), report.getRevenueGenerated(), report.getFlightNumber()));
+            flightReports.add(new ReportDto(report.getBookedSeats(), report.getRevenueGenerated(), report.getFlightNumber()));
         }
 
         return flightReports;
@@ -72,7 +65,7 @@ public class ReportService {
             for (ReportDto flightReport : flightReports) {
                 table.addCell(flightReport.getFlightNumber());
                 table.addCell(Double.toString(flightReport.getRevenueGenerated()));
-                table.addCell(Integer.toString(flightReport.getBookedseats()));
+                table.addCell(Integer.toString(flightReport.getBookedSeats()));
             }
 
             // add the table to the document

@@ -22,8 +22,8 @@ public class AdminController {
     @Autowired
     JwtUtil jwtUtil;
     @PostMapping("/add")
-    public ResponseEntity<Map<String, String>> add(@RequestBody FlightDto flightDto, @RequestHeader Map request) throws InvalidFlightException {
-        String token = request.get("authorization").toString().substring(7);
+    public ResponseEntity<Map<String, String>> add(@RequestBody FlightDto flightDto, @RequestHeader Map<String,String> request) throws InvalidFlightException {
+        String token = request.get("authorization").substring(7);
         Map<String, String> response = new HashMap<>();
         if (!jwtUtil.isAdmin(token)) {
             response.put("message", "You are not authorized");
@@ -45,9 +45,9 @@ public class AdminController {
 
 
     @DeleteMapping("/delete/{flightNumber}")
-    public Map<String, String> delete(@PathVariable String flightNumber, @RequestHeader Map request) {
+    public Map<String, String> delete(@PathVariable String flightNumber, @RequestHeader Map<String,String> request) {
         Map<String, String> response = new HashMap<>();
-        String token = request.get("authorization").toString().substring(7);
+        String token = request.get("authorization").substring(7);
         if (!jwtUtil.isAdmin(token)) {
             response.put("message", "You are not authorized");
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED).getBody();
@@ -63,9 +63,9 @@ public class AdminController {
 
 
     @PutMapping("/update")
-    public Map<String, String> update(@RequestBody FlightDto flightDto, @RequestHeader Map request) {
+    public Map<String, String> update(@RequestBody FlightDto flightDto, @RequestHeader Map<String,String> request) {
         Map<String, String> response = new HashMap<>();
-        String token = request.get("authorization").toString().substring(7);
+        String token = request.get("authorization").substring(7);
         if (!jwtUtil.isAdmin(token)) {
             response.put("message", "You are not authorized");
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED).getBody();

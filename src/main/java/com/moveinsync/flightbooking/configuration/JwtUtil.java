@@ -12,7 +12,7 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
-    private final static String Secret = "ZBlt3w4fMYGh4pOzqxltO9XDPdSxITLQ2H8eOZUDdylZb6e5H6z5U6YyU9ukpveblODBCdBHm5bMkU5h5JmkY6iw";
+    private static final String Secret = "ZBlt3w4fMYGh4pOzqxltO9XDPdSxITLQ2H8eOZUDdylZb6e5H6z5U6YyU9ukpveblODBCdBHm5bMkU5h5JmkY6iw";
 
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
@@ -30,7 +30,6 @@ public class JwtUtil {
     public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(Secret).parseClaimsJws(token);
-            System.out.println(Jwts.parser().setSigningKey(Secret).parseClaimsJws(token).getBody());
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             // log the exception
@@ -56,7 +55,6 @@ public class JwtUtil {
     public boolean isAdmin(String token) {
         try {
             Claims claims = Jwts.parser().setSigningKey(Secret).parseClaimsJws(token).getBody();
-            System.out.println(claims);
             Boolean isAdmin = (Boolean) claims.get("isadmin");
             return isAdmin != null && isAdmin;
         } catch (JwtException | IllegalArgumentException e) {

@@ -22,8 +22,8 @@ public class ReportController {
     @Autowired
     JwtUtil jwtUtil;
     @GetMapping("/generatereport")
-    public ResponseEntity<InputStreamResource> generatereports(@RequestHeader Map request) throws DocumentException {
-        String token = request.get("authorization").toString().substring(7);
+    public ResponseEntity<InputStreamResource> generatereports(@RequestHeader Map<String,String> request) throws DocumentException {
+        String token = request.get("authorization").substring(7);
         if (!jwtUtil.isAdmin(token)) {
             String message = "You are not authorized to access this resource";
             byte[] bytes = (message + "\n").getBytes();

@@ -1,6 +1,4 @@
 package com.moveinsync.flightbooking.repository;
-
-import com.moveinsync.flightbooking.model.Flight;
 import com.moveinsync.flightbooking.model.Reportmodel;
 import org.springframework.data.jpa.repository.JpaRepository;
 

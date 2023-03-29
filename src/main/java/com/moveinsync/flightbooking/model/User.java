@@ -36,10 +36,11 @@ public class User implements UserDetails {
     private String token;
 
 
-    public User(String username, String password, String email) {
+    public User(String username, String password, String email,boolean isAdmin) {
         this.setUsername(username);
         this.setPassword(password);
         this.setEmail(email);
+        this.setAdmin(isAdmin);
     }
 
     // existing properties and methods

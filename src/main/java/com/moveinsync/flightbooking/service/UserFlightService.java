@@ -1,15 +1,10 @@
 package com.moveinsync.flightbooking.service;
-
-
-import com.moveinsync.flightbooking.dto.FlightDto;
 import com.moveinsync.flightbooking.model.Flight;
 import com.moveinsync.flightbooking.model.SeatType;
 import com.moveinsync.flightbooking.repository.FlightRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
